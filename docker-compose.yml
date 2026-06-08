@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:16
+    container_name: gym-crm-db
+    environment:
+      POSTGRES_USER: gymcrm
+      POSTGRES_PASSWORD: gymcrm1234
+      POSTGRES_DB: gymcrm
+    ports:
+      - "5432:5432"
+    volumes:
+      - gymcrm_db:/var/lib/postgresql/data
+
+volumes:
+  gymcrm_db:

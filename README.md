@@ -1,6 +1,6 @@
-# Turborepo Next.js + Hono Starter
+# Gym CRM
 
-Turborepo をベースにした Next.js + Hono のスターターテンプレートです。
+顧客管理・予約管理を行う SaaS アプリケーション
 
 ## Tech Stack
 
