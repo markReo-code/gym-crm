@@ -26,6 +26,9 @@ importers:
       '@repo/db':
         specifier: workspace:*
         version: link:../../packages/db
+      dotenv:
+        specifier: ^17.4.2
+        version: 17.4.2
       hono:
         specifier: ^4.12.23
         version: 4.12.23
@@ -54,12 +57,18 @@ importers:
 
   apps/web:
     dependencies:
+      '@repo/api':
+        specifier: workspace:^
+        version: link:../api
       '@repo/ui':
         specifier: workspace:*
         version: link:../../packages/ui
       '@tailwindcss/postcss':
         specifier: ^4.3.0
         version: 4.3.0
+      hono:
+        specifier: ^4.12.23
+        version: 4.12.23
       next:
         specifier: 16.2.6
         version: 16.2.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
@@ -119,6 +128,9 @@ importers:
       '@types/pg':
         specifier: ^8.20.0
         version: 8.20.0
+      dotenv:
+        specifier: ^17.4.2
+        version: 17.4.2
       prisma:
         specifier: ^7.8.0
         version: 7.8.0(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(typescript@5.9.2)

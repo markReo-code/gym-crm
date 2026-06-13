@@ -1,5 +1,8 @@
 {
-  "name": "api",
+  "name": "@repo/api",
+  "exports": {
+    "./app": "./src/app.ts"
+  },
   "version": "0.1.0",
   "type": "module",
   "private": true,
@@ -13,6 +16,7 @@
   "dependencies": {
     "@hono/node-server": "^2.0.4",
     "@repo/db": "workspace:*",
+    "dotenv": "^17.4.2",
     "hono": "^4.12.23",
     "zod": "^4.4.3"
   },
