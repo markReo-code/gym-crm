@@ -7,7 +7,10 @@ export const memberResponseSchema = z.object({
   phone: z.string().nullable(),
   gender: z.string(),
   status: z.enum(["active", "inactive", "suspended"]),
-  planId: z.string(),
+  plan: z.object({
+    id: z.string(),
+    name: z.string(),
+  }),
   createdAt: z.string(),
   updatedAt: z.string(),
 });
