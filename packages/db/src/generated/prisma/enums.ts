@@ -9,6 +9,15 @@
 * 🟢 You can import this file directly.
 */
 
+export const OrganizationRole = {
+  owner: 'owner',
+  admin: 'admin',
+  staff: 'staff'
+} as const
+
+export type OrganizationRole = (typeof OrganizationRole)[keyof typeof OrganizationRole]
+
+
 export const MemberStatus = {
   active: 'active',
   inactive: 'inactive',
