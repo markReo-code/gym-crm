@@ -8,12 +8,50 @@ datasource db {
 }
 
 model User {
-  id    String @id @default(cuid())
-  name  String
-  email String @unique
+  id          String  @id @default(cuid())
+  firebaseUid String  @unique
+  name        String?
+  email       String  @unique
+
+  memberships OrganizationMember[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+// 組織
+model Organization {
+  id   String @id @default(cuid())
+  name String
+
+  members OrganizationMember[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// 組織に所属しているユーザー
+model OrganizationMember {
+  id             String           @id @default(cuid())
+  organizationId String
+  userId         String
+  role           OrganizationRole
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+  user         User         @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([organizationId, userId])
+  @@index([userId])
+}
+
+// 組織の役職
+enum OrganizationRole {
+  owner
+  admin
+  staff
 }
 
 model Plan {

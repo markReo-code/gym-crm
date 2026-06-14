@@ -447,10 +447,6 @@ export type MemberUncheckedUpdateManyWithoutPlanNestedInput = {
   deleteMany?: Prisma.MemberScalarWhereInput | Prisma.MemberScalarWhereInput[]
 }
 
-export type NullableStringFieldUpdateOperationsInput = {
-  set?: string | null
-}
-
 export type EnumMemberStatusFieldUpdateOperationsInput = {
   set?: $Enums.MemberStatus
 }
