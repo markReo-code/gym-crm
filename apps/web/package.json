@@ -1,5 +1,5 @@
 {
-  "name": "web",
+  "name": "@repo/web",
   "version": "0.1.0",
   "type": "module",
   "private": true,
@@ -11,15 +11,20 @@
     "check-types": "next typegen && tsc --noEmit"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.4.0",
     "@repo/api": "workspace:*",
     "@repo/ui": "workspace:*",
     "@tailwindcss/postcss": "^4.3.0",
+    "firebase": "^12.14.0",
     "hono": "^4.12.23",
+    "lucide-react": "^1.21.0",
     "next": "16.2.6",
     "postcss": "^8.5.15",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "tailwindcss": "^4.3.0"
+    "react-hook-form": "^7.79.0",
+    "tailwindcss": "^4.3.0",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",

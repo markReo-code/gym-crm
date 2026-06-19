@@ -1,5 +1,6 @@
 import Link from "next/link";
 import React from "react";
+import LogoutButton from "./auth/LogoutButton";
 
 type NavItem = {
   value: string;
@@ -15,21 +16,31 @@ const Sidebar = () => {
   ];
 
   return (
-    <nav className="flex h-full min-h-screen flex-col gap-8 p-5">
-      <div>
-        <p className="text-lg font-bold text-indigo-700">GYM CRM</p>
-      </div>
+    <>
+      <aside className="hidden border-r border-slate-200 bg-white lg:block lg:w-64">
+        <div className="flex min-h-screen flex-col ">
+          <div className="px-5 pt-5">
+            <p className="text-lg font-bold text-indigo-700">GYM CRM</p>
+          </div>
 
-      <ul className="space-y-4">
-        {navItems.map((item) => (
-          <li key={item.value} className="font-bold">
-            <Link href={`${item.href}`} className="block rounded-md px-3 py-2">
-              {item.label}
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </nav>
+          <nav className="mt-8 px-5">
+            <ul className="space-y-4">
+              {navItems.map((item) => (
+                <li key={item.value} className="font-bold">
+                  <Link href={`${item.href}`} className="block rounded-md py-2">
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          <div className="mt-auto border-t border-slate-200 px-5 py-5">
+            <LogoutButton />
+          </div>
+        </div>
+      </aside>
+    </>
   );
 };
 
