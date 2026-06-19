@@ -1,6 +1,6 @@
 @import "tailwindcss";
-@source "../../../packages/ui/src";
 @import "@repo/ui/globals.css";
+@source "../../../packages/ui/src";
 
 :root {
   --background: #ffffff;
