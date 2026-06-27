@@ -322,14 +322,18 @@ gcloud run services update gym-crm-api \
   --add-cloudsql-instances=gym-crm-dev:asia-northeast1:gym-crm-postgres
 ```
 
-## 次にやること
+## 今回確認したこと
 
-次ブランチで以下を行う。
+この検証では、Cloud Run から Cloud SQL PostgreSQL へ接続し、Prisma migration と seed を適用したうえで、API から Cloud SQL 上のデータを取得できることを確認した。
 
-1. `prisma migrate deploy`
-2. `prisma db seed`
-3. Cloud SQL 上にテーブルと初期データを作成
-4. `/members` API が Cloud SQL のデータを返すことを確認
+確認した内容:
+
+1. Cloud Run service と Cloud SQL instance の接続
+2. Secret Manager 経由での `DATABASE_URL` 管理
+3. `prisma migrate deploy` による Cloud SQL への schema 適用
+4. 必要に応じた `prisma db seed` の実行
+5. `/health/db` による DB 接続確認
+6. `/members` API による Cloud SQL 上のデータ取得確認
 
 ## 補足
 
@@ -340,3 +344,13 @@ Cloud SQL 接続や Secret の設定変更も Revision 単位で管理される�
 このドキュメントには実際の DB password は記載しない。
 
 Secret Manager に登録した値を変更したい場合は、Secret の新しい version を追加し、Cloud Run の revision を更新して反映する。
+
+## Cloud SQL の料金と学習用途での扱い
+
+Cloud SQL はインスタンスを起動している間、クエリ量が少なくても CPU・メモリなどの料金が継続して発生する。停止するとインスタンス料金は停止するが、ストレージ、バックアップ、IP アドレスなど一部の料金は継続する。
+
+今回の構成では、Cloud Run と Cloud SQL の接続、Secret Manager 経由の `DATABASE_URL` 管理、Prisma migration の適用、Cloud Run からの DB 接続確認までを学習目的で検証した。
+
+検証が完了し、継続して Cloud SQL を利用する予定がない場合は、不要な課金を避けるために Cloud SQL instance を停止または削除する。削除する場合は、必要に応じて事前に `pg_dump` などでバックアップを取得する。
+
+再度 Cloud SQL を利用する場合は、このドキュメントの手順に沿って Cloud SQL instance、database、user、Secret Manager、Cloud Run 接続設定を作成し、`prisma migrate deploy` を再実行する。
