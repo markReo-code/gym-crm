@@ -1,5 +1,6 @@
 import React from "react";
 import { LoginForm } from "../../../components/auth/LoginForm";
+import Link from "next/link";
 
 const LoginPage = () => {
   return (
@@ -13,6 +14,16 @@ const LoginPage = () => {
         </p>
 
         <LoginForm />
+
+        <span className="block w-full text-center mt-4 ">
+          新規会員登録
+          <Link
+            href="/signup"
+            className="pl-2 text-muted-foreground underline underline-offset-2"
+          >
+            はじめてご利用の方はこちら
+          </Link>
+        </span>
       </div>
     </div>
   );
