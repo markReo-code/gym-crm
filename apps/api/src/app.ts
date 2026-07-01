@@ -4,6 +4,7 @@ import { membersRoute } from "./routes/members.js";
 import { corsMiddleware } from "./middleware/cors.js";
 import { requestIdMiddleware } from "./middleware/requestId.js";
 import { prisma } from "@repo/db";
+import { usersRoute } from "./routes/users.js";
 
 //  実際に起動する Hono app
 export const app = new Hono()
@@ -36,6 +37,7 @@ export const app = new Hono()
     }
   })
 
+  .route("/users", usersRoute)
   .route("/members", membersRoute);
 
 // そのappの型

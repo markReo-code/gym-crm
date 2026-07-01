@@ -1,5 +1,6 @@
 import React from "react";
 import SignupForm from "../../../components/auth/SignupForm";
+import Link from "next/link";
 
 const SignupPage = () => {
   return (
@@ -10,6 +11,16 @@ const SignupPage = () => {
         </h1>
 
         <SignupForm />
+
+        <span className="block w-full text-center mt-4 ">
+          既にアカウントをお持ちですか？
+          <Link
+            href="/login"
+            className="pl-2 text-muted-foreground underline underline-offset-2"
+          >
+            ログイン
+          </Link>
+        </span>
       </div>
     </div>
   );

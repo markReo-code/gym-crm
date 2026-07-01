@@ -15,6 +15,7 @@ import { loginWithEmail } from "../../lib/firebase/auth";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import PasswordVisibilityButton from "./PasswordVisibilityButton";
+import { Loader2 } from "lucide-react";
 
 const loginSchema = z.object({
   email: z.email("メールアドレスの形式が正しくありません。"),
@@ -43,13 +44,19 @@ export const LoginForm = () => {
       setError("");
       await loginWithEmail(values.email, values.password);
       router.replace("/dashboard");
-    } catch (error) {
-      setError("ログインに失敗しました。入力内容を確認してください。");
+    } catch {
+      setError("メールアドレスまたはパスワードが正しくありません。");
     }
   };
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} className="mt-10">
+      {error && (
+        <p className="mb-4 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+          {error}
+        </p>
+      )}
+
       <FieldGroup className="gap-6">
         <Controller
           name="email"
@@ -64,6 +71,7 @@ export const LoginForm = () => {
                 id={field.name}
                 type="email"
                 aria-invalid={fieldState.invalid}
+                className="min-h-12"
               />
               {fieldState.invalid && (
                 <FieldError
@@ -89,7 +97,7 @@ export const LoginForm = () => {
                   id={field.name}
                   type={showPassword ? "text" : "password"}
                   aria-invalid={fieldState.invalid}
-                  className="pr-10"
+                  className="pr-10 min-h-12"
                 />
                 <PasswordVisibilityButton
                   isVisible={showPassword}
@@ -107,8 +115,19 @@ export const LoginForm = () => {
         />
       </FieldGroup>
 
-      <Button type="submit" className="h-12 w-full text-base font-medium mt-10">
-        {isSubmitting ? "ログイン中..." : "ログインする"}
+      <Button
+        type="submit"
+        disabled={isSubmitting}
+        className="h-12 w-full text-base font-medium mt-12"
+      >
+        {isSubmitting ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ログイン中...
+          </>
+        ) : (
+          "ログインする"
+        )}
       </Button>
     </form>
   );

@@ -20,7 +20,9 @@ const Sidebar = () => {
       <aside className="hidden border-r border-slate-200 bg-white lg:block lg:w-64">
         <div className="flex min-h-screen flex-col ">
           <div className="px-5 pt-5">
-            <p className="text-lg font-bold text-indigo-700">GYM CRM</p>
+            <Link href="/dashboard">
+              <span className="text-lg font-bold text-indigo-700">GYM CRM</span>
+            </Link>
           </div>
 
           <nav className="mt-8 px-5">

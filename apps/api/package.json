@@ -17,6 +17,7 @@
     "@hono/node-server": "^2.0.4",
     "@repo/db": "workspace:*",
     "dotenv": "^17.4.2",
+    "firebase-admin": "^14.1.0",
     "hono": "^4.12.23",
     "zod": "^4.4.3"
   },
