@@ -46,7 +46,7 @@ function getRepositoryInfo() {
   return { owner, repoName };
 }
 
-// GitHub APIからPRの変更ファイル一覧を取得する
+// GitHub APIからPRの変更ファイル情報(diff・patch含む)を取得する
 async function fetchChangedFiles({ owner, repoName, prNumber }) {
   const token = process.env.GITHUB_TOKEN;
 
@@ -122,6 +122,72 @@ function readPlaywrightConfig() {
   return fs.readFileSync(configPath, "utf-8");
 }
 
+// AIに渡すプロンプトテンプレートを読み込む
+function readPromptTemplate() {
+  const promptPath = path.join(
+    process.cwd(),
+    "scripts",
+    "e2e-ai",
+    "prompts",
+    "e2e-suggestion.md",
+  );
+
+  if (!fs.existsSync(promptPath)) {
+    throw new Error("Prompt template not found.");
+  }
+
+  return fs.readFileSync(promptPath, "utf-8");
+}
+
+// OpenAI APIへPRコンテキストを送信し、E2Eテスト提案を生成する
+async function generateE2ESuggestions({ context, prompt }) {
+  const apiKey = process.env.OPENAI_API_KEY;
+
+  if (!apiKey) {
+    throw new Error("OPENAI_API_KEY is not set.");
+  }
+
+  const response = await fetch("https://api.openai.com/v1/responses", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: "gpt-5.1",
+      instructions: prompt,
+      input: JSON.stringify(context, null, 2),
+      max_output_tokens: 3000,
+    }),
+  });
+
+  if (!response.ok) {
+    const errorBody = await response.text();
+    throw new Error(
+      `OpenAI API request failed: ${response.status}
+        ${response.statusText}\n${errorBody}`,
+    );
+  }
+
+  return response.json();
+}
+
+// OpenAI APIのレスポンスからAIが生成したテキストを取得する
+function extractOutputText(response) {
+  if (response.output_text) {
+    return response.output_text;
+  }
+
+  return (
+    response.output
+      ?.flatMap((item) => item.content ?? [])
+      ?.filter((content) => content.type === "output_text")
+      ?.map((content) => content.text)
+      ?.join("\n") ?? ""
+  );
+}
+
+// GitHub Actions全体の処理を実行する
 async function main() {
   const eventData = readGitHubEvent();
   const pullRequest = getPullRequest(eventData);
@@ -136,6 +202,7 @@ async function main() {
   const existingE2ESpecs = readExistingE2ESpecs();
   const playwrightConfig = readPlaywrightConfig();
 
+  // OpenAIへ渡すPRコンテキストを作成する
   const context = {
     pullRequest,
     repository,
@@ -144,7 +211,22 @@ async function main() {
     playwrightConfig,
   };
 
-  console.log(JSON.stringify(context, null, 2));
+  const prompt = readPromptTemplate();
+
+  // OpenAI APIへPRコンテキストを送信する
+  const aiResponse = await generateE2ESuggestions({
+    context,
+    prompt,
+  });
+
+  // AIが生成したMarkdown形式の提案を取得する
+  const suggestionMarkdown = extractOutputText(aiResponse);
+
+  if (!suggestionMarkdown) {
+    throw new Error("OpenAI response did not include output text.");
+  }
+
+  console.log(suggestionMarkdown);
 }
 
 await main();
