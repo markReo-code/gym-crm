@@ -4,6 +4,16 @@ on:
   pull_request:
     branches:
       - develop
+    paths:
+      - "apps/**"
+      - "packages/**"
+      - "e2e/**"
+      - "playwright.config.ts"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - "turbo.json"
+      - ".github/workflows/playwright.yml"
 
 jobs:
   e2e:
