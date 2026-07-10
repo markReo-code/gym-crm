@@ -199,8 +199,6 @@ const COMMENT_MARKER = "<!-- e2e-ai-suggestions -->";
 function buildCommentBody(suggestionMarkdown) {
   return `${COMMENT_MARKER}
 
-## Playwright E2Eテスト提案
-
 ${suggestionMarkdown}`;
 }
 
