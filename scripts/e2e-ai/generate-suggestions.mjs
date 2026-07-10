@@ -46,13 +46,20 @@ function getRepositoryInfo() {
   return { owner, repoName };
 }
 
-// GitHub APIからPRの変更ファイル情報(diff・patch含む)を取得する
-async function fetchChangedFiles({ owner, repoName, prNumber }) {
+// GitHub APIで使うトークンを取得する
+function getGitHubToken() {
   const token = process.env.GITHUB_TOKEN;
 
   if (!token) {
-    throw new Error("GITHUB_TOKEN is not set");
+    throw new Error("GITHUB_TOKEN is not set.");
   }
+
+  return token;
+}
+
+// GitHub APIからPRの変更ファイル情報(diff・patch含む)を取得する
+async function fetchChangedFiles({ owner, repoName, prNumber }) {
+  const token = getGitHubToken();
 
   const response = await fetch(
     `https://api.github.com/repos/${owner}/${repoName}/pulls/${prNumber}/files?per_page=100`,
@@ -187,6 +194,128 @@ function extractOutputText(response) {
   );
 }
 
+const COMMENT_MARKER = "<!-- e2e-ai-suggestions -->";
+
+function buildCommentBody(suggestionMarkdown) {
+  return `${COMMENT_MARKER}
+
+## Playwright E2Eテスト提案
+
+${suggestionMarkdown}`;
+}
+
+// AI提案をPull Requestのコメントとして投稿する
+async function createPullRequestComment({ owner, repoName, prNumber, body }) {
+  const token = getGitHubToken();
+
+  const response = await fetch(
+    `https://api.github.com/repos/${owner}/${repoName}/issues/${prNumber}/comments`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/vnd.github+json",
+        "Content-Type": "application/json",
+        "X-GitHub-Api-Version": "2022-11-28",
+      },
+      body: JSON.stringify({ body }),
+    },
+  );
+
+  if (!response.ok) {
+    const errorBody = await response.text();
+
+    throw new Error(
+      `Failed to create PR comment: ${response.status}  ${response.statusText}\n${errorBody}`,
+    );
+  }
+
+  return response.json();
+}
+
+// Pull Requestに投稿済みのコメント一覧を取得する
+async function fetchPullRequestComments({ owner, repoName, prNumber }) {
+  const token = getGitHubToken();
+
+  const response = await fetch(
+    `https://api.github.com/repos/${owner}/${repoName}/issues/${prNumber}/comments?per_page=100`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
+      },
+    },
+  );
+  if (!response.ok) {
+    const errorBody = await response.text();
+
+    throw new Error(
+      `Failed to fetch PR comments: ${response.status}${response.statusText}\n${errorBody}`,
+    );
+  }
+
+  return response.json();
+}
+
+// Pull Requestに投稿済みのコメントを更新する
+async function updatePullRequestComment({ owner, repoName, commentId, body }) {
+  const token = getGitHubToken();
+
+  const response = await fetch(
+    `https://api.github.com/repos/${owner}/${repoName}/issues/comments/${commentId}`,
+    {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/vnd.github+json",
+        "Content-Type": "application/json",
+        "X-GitHub-Api-Version": "2022-11-28",
+      },
+      body: JSON.stringify({ body }),
+    },
+  );
+
+  if (!response.ok) {
+    const errorBody = await response.text();
+
+    throw new Error(
+      `Failed to update PR comment: ${response.status} ${response.statusText}\n${errorBody}`,
+    );
+  }
+
+  return response.json();
+}
+
+// AI提案コメントが既にあれば更新し、なければ新規作成する
+async function upsertPullRequestComment({ owner, repoName, prNumber, body }) {
+  const comments = await fetchPullRequestComments({
+    owner,
+    repoName,
+    prNumber,
+  });
+
+  const existingComment = comments.find((comment) =>
+    comment.body?.includes(COMMENT_MARKER),
+  );
+
+  if (existingComment) {
+    return updatePullRequestComment({
+      owner,
+      repoName,
+      commentId: existingComment.id,
+      body,
+    });
+  }
+
+  return createPullRequestComment({
+    owner,
+    repoName,
+    prNumber,
+    body,
+  });
+}
+
 // GitHub Actions全体の処理を実行する
 async function main() {
   const eventData = readGitHubEvent();
@@ -227,6 +356,13 @@ async function main() {
   }
 
   console.log(suggestionMarkdown);
+
+  await upsertPullRequestComment({
+    owner: repository.owner,
+    repoName: repository.repoName,
+    prNumber: pullRequest.number,
+    body: buildCommentBody(suggestionMarkdown),
+  });
 }
 
 await main();
