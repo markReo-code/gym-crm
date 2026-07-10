@@ -353,8 +353,6 @@ async function main() {
     throw new Error("OpenAI response did not include output text.");
   }
 
-  console.log(suggestionMarkdown);
-
   await upsertPullRequestComment({
     owner: repository.owner,
     repoName: repository.repoName,
