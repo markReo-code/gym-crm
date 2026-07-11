@@ -28,31 +28,31 @@ Rules:
 
 Output format:
 
-## AI Suggested E2E Tests
+## AIによるE2Eテスト提案
 
-### Summary
+### 概要
 
-Briefly summarize whether E2E tests are recommended for this PR.
+このPRに対してE2Eテストの追加・更新が必要かを簡潔に説明してください。
 
-### Suggested Tests
+### テスト提案
 
-For each suggestion:
+E2Eテストを提案する場合は、以下の形式で記載してください。
 
-#### 1. Test title
+#### 1. テスト名
 
-- Priority: High / Medium / Low
-- Suggested file:
-- Reason:
-- Scenario:
-  - Step 1
-  - Step 2
-  - Expected result
-- Draft Playwright spec:
+- 優先度: High / Medium / Low
+- 提案ファイル:
+- 理由:
+- シナリオ:
+  - 手順 1
+  - 手順 2
+  - 期待結果
+- Playwright spec草案:
 
 ```ts
 // draft only
 ```
 
-### Notes
+### 補足
 
 前提、情報不足、またはE2Eテストが不要と判断した理由があれば記載してください。
